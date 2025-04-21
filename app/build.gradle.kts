@@ -1,10 +1,10 @@
-import org.jetbrains.kotlin.fir.declarations.builder.buildScript
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    kotlin("kapt")
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp") version "1.9.0-1.0.13"
+
+
 }
 
 android {
@@ -23,6 +23,10 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+    }
+
+    kotlin {
+        sourceSets["main"].kotlin.srcDir("build/generated/ksp/main/kotlin")
     }
 
     buildTypes {
@@ -86,7 +90,7 @@ dependencies {
 
     // Room (Local DB / Base de données locale)
     implementation("androidx.room:room-runtime:2.5.2")
-    kapt("androidx.room:room-compiler:2.5.2")
+    ksp("androidx.room:room-compiler:2.5.2")
     implementation("androidx.room:room-ktx:2.5.2")
     implementation ("androidx.room:room-paging:2.5.2")
 
@@ -101,7 +105,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.4.0")
 
     // Moshi (JSON parsing / Analyse JSON)
-    kapt ("com.squareup.moshi:moshi-kotlin-codegen:1.15.0")
+    ksp ("com.squareup.moshi:moshi-kotlin-codegen:1.15.0")
     implementation ("com.squareup.moshi:moshi-kotlin:1.15.0")
 
     // Testing
