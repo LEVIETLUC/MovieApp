@@ -16,6 +16,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
 import org.koin.androidx.compose.getViewModel
@@ -55,4 +57,13 @@ fun SearchScreen(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun MyViewPrevie3() {
+    SearchScreen(
+        onMovieClick = {},
+        onBack = {}
+    )
 }

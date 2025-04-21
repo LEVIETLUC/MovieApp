@@ -18,11 +18,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
+import com.example.movieapp.db.MovieEntity
 import org.koin.androidx.compose.getViewModel
 import com.example.movieapp.ui.viewmodels.TrendingViewModel
+
 
 @Composable
 fun TrendingScreen(
@@ -83,4 +88,21 @@ fun MovieRow(
             Text(text = "⭐ ${movie.voteAverage}")
         }
     }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun MyViewPreview1() {
+    MovieRow(
+        movie = MovieEntity(
+            id = 1,
+            title = "Movie Title",
+            posterPath = "/path/to/poster.jpg",
+            releaseDate = "2023-10-01",
+            voteAverage = 8.5,
+            page = 1
+        ),
+        onClick = {}
+    )
 }

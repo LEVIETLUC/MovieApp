@@ -12,4 +12,7 @@ interface MovieDetailDao {
 
     @Query("SELECT * FROM movie_details WHERE id = :id")
     fun getById(id: Int): MovieDetailEntity?
+
+    @Query("DELETE FROM movie_details")
+    fun clearAll(): Int
 }

@@ -70,10 +70,17 @@ class MovieRepository(
         return service.searchMovies(query, page)
     }
 
+    suspend fun resetDatabase(db: TmdbDatabase) {
+        withContext(Dispatchers.IO) {
+            db.clearAllTables()
+        }
+    }
+
     suspend fun getDetail(id: Int): MovieDetailEntity {
         detailDao.getById(id)?.let { return it }
         val resp = service.getMovieDetails(id)
         val entity = resp.toEntity()
+        resetDatabase(db)
         detailDao.insert(entity)
         return entity
     }
