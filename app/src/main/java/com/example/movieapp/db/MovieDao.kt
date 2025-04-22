@@ -28,4 +28,7 @@ interface MovieDao {
 
     @Query("SELECT * FROM movies")
     fun getAllMovies(): List<MovieEntity>
+
+    @Query("SELECT * FROM movies WHERE title LIKE '%' || :query || '%'")
+    fun searchMovies(query: String): List<MovieEntity>
 }

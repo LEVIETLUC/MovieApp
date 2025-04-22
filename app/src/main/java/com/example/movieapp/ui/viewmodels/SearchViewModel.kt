@@ -23,11 +23,25 @@ class SearchViewModel(
             return
         }
         viewModelScope.launch {
-            _isLoading.value = true
-            val resp = repo.search(query, 1)
-            val list = resp.results.map { it.toEntity(resp.page) }
-            _searchResults.value = list
-            _isLoading.value = false
+
+            try {
+                _isLoading.value = true
+                val resp = repo.search(query, 1)
+                val list = resp.results.map { it.toEntity(resp.page) }
+                _searchResults.value = list
+                _isLoading.value = false
+            }
+            catch (e: Exception) {
+                try {
+                    val list = repo.searchMoviesDB(query)
+                    _searchResults.value = list
+                    _isLoading.value = false
+                } catch (e: Exception) {
+                    _isLoading.value = false
+                    e.printStackTrace()
+                }
+            }
+
         }
     }
 }

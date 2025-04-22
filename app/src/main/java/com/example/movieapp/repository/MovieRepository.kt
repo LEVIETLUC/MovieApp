@@ -19,6 +19,7 @@ import com.example.movieapp.network.model.MovieResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MovieRepository(
@@ -29,30 +30,14 @@ class MovieRepository(
 ) {
 
     @OptIn(ExperimentalPagingApi::class)
-    fun getTrendingStream(): Flow<PagingData<MovieEntity>> {
-        //load data string from dv
+
+
+    fun getTrendingStream(page: Int): Flow<PagingData<MovieEntity>> {
         return Pager(
             config = PagingConfig(pageSize = 20, enablePlaceholders = false),
-            remoteMediator = TrendingRemoteMediator(service, db),
-            pagingSourceFactory = { movieDao.pagingSource(page = 1) },
-        ).flow.map { pagingData ->
-            Log.d("MovieRepository", "getTrendingStream2: ${pagingData.map { it.title }}")
-            pagingData
-        }
-
+            pagingSourceFactory = { movieDao.pagingSource(page) }
+        ).flow
     }
-
-
-//    fun getTrendingStream(): Flow<PagingData<MovieEntity>> {
-//        return Pager(
-//            config = PagingConfig(pageSize = 20),
-//            Log.e("MovieRepository", "getTrendingStream: ${movieDao.pagingSource(page = 1)}"),
-//            pagingSourceFactory = { movieDao.pagingSource(page = 1) }
-//        ).flow.map { pagingData ->
-//            Log.d("MovieRepository", "getTrendingStream2: ${pagingData.map { it.title }}")
-//            pagingData
-//        }
-//    }
 
     // Load & cache trending pages
     suspend fun loadAndCacheTrending(page: Int): List<MovieEntity> {
@@ -62,6 +47,17 @@ class MovieRepository(
         val entities = resp.results.map { it.toEntity(page) }
         withContext(Dispatchers.IO) {
             movieDao.insertAll(entities)
+            entities.forEach {
+                launch {
+                    try {
+                        val movieDetail = service.getMovieDetails(it.id).toEntity()
+                        detailDao.insert(movieDetail)
+                    } catch (e: Exception) {
+                        Log.e("MovieRepository", "Error fetching details for movie id ${it.id}", e)
+                    }
+                }
+            }
+            Log.e("MovieRepository", "loadAndCacheTrending: inserted ${entities.size} movies for page $page")
         }
         return entities
     }
@@ -78,18 +74,42 @@ class MovieRepository(
 
     suspend fun getDetail(id: Int): MovieDetailEntity {
 //        detailDao.getById(id)?.let { return it }
-        val resp = service.getMovieDetails(id)
-        Log.d("MovieRepository", "getDetail: Fetched movie details for id $id")
-        Log.d("MovieRepository", "getDetail: raw response = $resp")
-        val entity = resp.toEntity()
-        resetDatabase(db)
-        insertMovieDetail(entity)
-        return entity
+        try {
+            val resp = service.getMovieDetails(id)
+            Log.d("MovieRepository", "getDetail: Fetched movie details for id $id")
+            Log.d("MovieRepository", "getDetail: raw response = $resp")
+            val entity = resp.toEntity()
+//            resetDatabase(db)
+//            insertMovieDetail(entity)
+            return entity
+        }
+        catch (e: Exception) {
+            try {
+                val entity = getMovieDetail(id)
+                Log.d("MovieRepository", "getDetail: Fetched movie details for id $id from DB")
+                Log.d("MovieRepository", "getDetail: raw response = $entity")
+                if (entity != null) {
+                    return entity
+                } else {
+                    throw Exception("Movie details not found in database for id $id")
+                }
+            }
+            catch (e: Exception) {
+                Log.e("MovieRepository", "getDetail: Error fetching movie details for id $id", e)
+                throw e
+            }
+        }
+
     }
 
     suspend fun insertMovieDetail(movieDetail: MovieDetailEntity) {
         return withContext(Dispatchers.IO) {
             detailDao.insert(movieDetail)
+        }
+    }
+    suspend fun getMovieDetail(id: Int): MovieDetailEntity? {
+        return withContext(Dispatchers.IO) {
+            detailDao.getById(id)
         }
     }
 
@@ -98,6 +118,13 @@ class MovieRepository(
             movieDao.getAllMovies()
         }
     }
+
+    suspend fun searchMoviesDB(query: String): List<MovieEntity> {
+        return withContext(Dispatchers.IO) {
+            movieDao.searchMovies(query)
+        }
+    }
+
 
 suspend fun getMoviePagingPage(page: Int): List<MovieEntity> {
     return withContext(Dispatchers.IO) {

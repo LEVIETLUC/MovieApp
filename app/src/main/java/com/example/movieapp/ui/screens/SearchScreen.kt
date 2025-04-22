@@ -23,6 +23,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import org.koin.androidx.compose.getViewModel
 import com.example.movieapp.ui.viewmodels.SearchViewModel
 
+
 @Composable
 fun SearchScreen(
     onMovieClick: (Int) -> Unit,

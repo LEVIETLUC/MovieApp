@@ -41,7 +41,6 @@ val appModule = module {
 
     single {
         Room.databaseBuilder(get(), TmdbDatabase::class.java, "tmdb.db")
-            .fallbackToDestructiveMigration()  // Sẽ xóa và tạo lại database khi version thay đổi
             .build()
     }
 
