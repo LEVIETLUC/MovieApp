@@ -6,6 +6,8 @@ import com.example.movieapp.network.AuthInterceptor
 import com.example.movieapp.network.TmdbService
 import com.example.movieapp.repository.MovieRepository
 import com.example.movieapp.util.Constants.TMDB_BASE_URL
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -23,10 +25,15 @@ val appModule = module {
     }
 
     single {
+
+        val moshi = Moshi.Builder()
+            .add(KotlinJsonAdapterFactory()) // Add this line
+            .build()
+
         Retrofit.Builder()
             .baseUrl(TMDB_BASE_URL)
             .client(get())
-            .addConverterFactory(MoshiConverterFactory.create())
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
             .create(TmdbService::class.java)
     }

@@ -77,12 +77,20 @@ class MovieRepository(
     }
 
     suspend fun getDetail(id: Int): MovieDetailEntity {
-        detailDao.getById(id)?.let { return it }
+//        detailDao.getById(id)?.let { return it }
         val resp = service.getMovieDetails(id)
+        Log.d("MovieRepository", "getDetail: Fetched movie details for id $id")
+        Log.d("MovieRepository", "getDetail: raw response = $resp")
         val entity = resp.toEntity()
         resetDatabase(db)
-        detailDao.insert(entity)
+        insertMovieDetail(entity)
         return entity
+    }
+
+    suspend fun insertMovieDetail(movieDetail: MovieDetailEntity) {
+        return withContext(Dispatchers.IO) {
+            detailDao.insert(movieDetail)
+        }
     }
 
     suspend fun getAllMoviesFromDb(): List<MovieEntity> {

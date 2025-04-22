@@ -36,7 +36,7 @@ class TrendingRemoteMediator(
 
             db.withTransaction {
                 if (loadType == LoadType.REFRESH) {
-                    movieDao.clearAll()     // bạn cần thêm hàm này trong dao
+                    movieDao.clearAll()
                 }
                 movieDao.insertAll(movies)
             }

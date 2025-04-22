@@ -1,5 +1,6 @@
 package com.example.movieapp.network.model
 
+import android.R
 import com.example.movieapp.db.MovieDetailEntity
 import com.squareup.moshi.Json
 
@@ -13,11 +14,11 @@ data class MovieDetailResponse(
     @Json(name = "vote_average") val voteAverage: Double,
     @Json(name = "vote_count") val voteCount: Int,
     val runtime: Int?,
-    val genres: List<String>?,
+    val genres: List<Genres>?,
     val tagline: String?,
-    val country: String?,
-    val languages: List<String>?,
-    @Json(name = "production_companies") val productionCompanies: List<Map<String, String>>?,
+    @Json(name = "origin_country") val country: List<String>?,
+    @Json(name = "original_language") val languages: String?,
+    @Json(name = "production_companies") val productionCompanies: List<ProductionCompanies>?,
     val homepage: String?
 
 ) {

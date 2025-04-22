@@ -1,266 +1,200 @@
-//package com.example.movieapp.ui.screens
-//
-//import androidx.compose.foundation.Image
-//import androidx.compose.foundation.layout.*
-//import androidx.compose.material.CircularProgressIndicator
-//import androidx.compose.material.Icon
-//import androidx.compose.material.IconButton
-//import androidx.compose.material.Text
-//import androidx.compose.runtime.*
-//import androidx.compose.ui.Alignment
-//import androidx.compose.ui.Modifier
-//import androidx.compose.ui.layout.ContentScale
-//import androidx.compose.ui.unit.dp
-//import coil.compose.AsyncImage
-//import org.koin.androidx.compose.getViewModel
-//import com.example.movieapp.ui.viewmodels.DetailViewModel
-//import androidx.compose.material.icons.Icons
-//import androidx.compose.material.icons.filled.ArrowBack
-//import androidx.compose.ui.tooling.preview.Preview
-//import androidx.compose.ui.tooling.preview.PreviewParameter
-//import com.example.movieapp.util.Constants.TMDB_IMAGE_BASE_URL
-//
-//@Composable
-//fun DetailScreen(
-//    movieId: Int,
-//    onBack: () -> Unit
-//) {
-//    val viewModel: DetailViewModel = getViewModel()
-//    LaunchedEffect(movieId) { viewModel.load(movieId) }
-//
-//    val detail by viewModel.movieDetail.collectAsState()
-//    val isLoading by viewModel.isLoading.collectAsState()
-//
-//    Box(modifier = Modifier.fillMaxSize()) {
-//        if (isLoading) {
-//            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-//        } else {
-//            detail?.let { m ->
-//                Column(modifier = Modifier.padding(16.dp)) {
-//                    IconButton(onClick = onBack) {
-//                        Icon(Icons.Default.ArrowBack, contentDescription = null)
-//                    }
-//                    AsyncImage(
-//                        model = TMDB_IMAGE_BASE_URL+"${m.posterPath}",
-//                        contentDescription = m.title,
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .height(300.dp),
-//                        contentScale = ContentScale.Crop
-//                    )
-//                    Spacer(Modifier.height(16.dp))
-//                    Text(text = m.title)
-//                    Spacer(Modifier.height(8.dp))
-//                    Text(text = m.overview)
-//                }
-//            }
-//        }
-//    }
-//}
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun MyViewPreview() {
-//    DetailScreen(
-//        movieId = 12344,
-//        onBack = {}
-//    )
-//}
-
 package com.example.movieapp.ui.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import org.koin.androidx.compose.getViewModel
 import com.example.movieapp.ui.viewmodels.DetailViewModel
+import com.example.movieapp.util.Constants.TMDB_IMAGE_BASE_URL
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.movieapp.util.Constants.TMDB_IMAGE_BASE_URL
+import kotlin.math.max
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun DetailScreen(
     movieId: Int,
     onBack: () -> Unit
 ) {
     val viewModel: DetailViewModel = getViewModel()
-    LaunchedEffect(movieId) {
-        viewModel.load(movieId)
-    }
-    val detail by viewModel.movieDetail.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
+    LaunchedEffect(movieId) { viewModel.load(movieId) }
 
-    Box(modifier = Modifier.fillMaxSize().background(Color(0xFF141824))) {
-        if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+    val movie by viewModel.movieDetail.collectAsState()
+    val loading by viewModel.isLoading.collectAsState()
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = Color(0xFF141824)
+    ) {
+        if (loading) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = Color.White)
+            }
         } else {
-            detail?.let { movie ->
+            movie?.let { m ->
                 Column(modifier = Modifier.fillMaxSize()) {
-                    // Backdrop and Poster section
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(400.dp)
+                    // Top hero section: backdrop + poster
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
                     ) {
-                        // Backdrop image
                         AsyncImage(
-                            model = "$TMDB_IMAGE_BASE_URL${movie.backdropPath}",
-                            contentDescription = "Movie backdrop",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(350.dp),
-                            contentScale = ContentScale.Crop
+                            model = "$TMDB_IMAGE_BASE_URL${m.backdropPath}",
+                            contentDescription = "Backdrop",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
                         )
-
-                        // Poster image
-                        AsyncImage(
-                            model = "$TMDB_IMAGE_BASE_URL${movie.posterPath}",
-                            contentDescription = "Movie poster",
+                        IconButton(
+                            onClick = onBack,
                             modifier = Modifier
+                                .padding(16.dp)
+                                .size(36.dp)
+                                .background(Color.Black.copy(alpha = 0.5f), shape = RoundedCornerShape(18.dp))
+                        ) {
+                            Icon(
+                                Icons.Default.ArrowBack,
+                                contentDescription = "Back",
+                                tint = Color.White
+                            )
+                        }
+                        AsyncImage(
+                            model = "$TMDB_IMAGE_BASE_URL${m.posterPath}",
+                            contentDescription = "Poster",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .width(120.dp)
+                                .height(160.dp)
                                 .align(Alignment.BottomEnd)
-                                .padding(end = 16.dp)
-                                .width(180.dp)
-                                .height(250.dp)
-                                .clip(RoundedCornerShape(8.dp)),
-                            contentScale = ContentScale.Crop
+                                .offset(x = (-16).dp, y = 60.dp)
+                                .clip(RoundedCornerShape(8.dp))
                         )
-
-                        // Title and tagline
-                        Column(
-                            modifier = Modifier
-                                .align(Alignment.BottomStart)
-                                .padding(start = 16.dp, bottom = 50.dp)
-                        ) {
-                            Text(
-                                text = movie.title ?: "Sinners",
-                                color = Color.White,
-                                fontSize = 32.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = movie.tagline ?: "Dance with the devil.",
-                                color = Color.White,
-                                fontSize = 16.sp
-                            )
-                        }
-
-                        // Rating
-                        Row(
-                            modifier = Modifier
-                                .align(Alignment.BottomStart)
-                                .padding(start = 16.dp, bottom = 16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "7.5/10",
-                                color = Color(0xFFFFD700),
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = " (181 votes)",
-                                color = Color.White,
-                                fontSize = 14.sp
-                            )
-                        }
                     }
 
-                    // Movie details section
-                    Column(
+                    // Title, rating, website
+                    Row(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
+                            .width(280.dp)
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Visit website button
-                        Box(modifier = Modifier.fillMaxWidth()) {
-                            Button(
-                                onClick = { /* Visit website */ },
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = m.title,
+                                color = Color.Red,
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Medium,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            m.tagline?.takeIf { it.isNotBlank() }?.let { tag ->
+                                Text(
+                                    text = tag,
+                                    color = Color.LightGray,
+                                    fontStyle = FontStyle.Italic,
+                                    maxLines = 2,
+                                    fontSize = 12.sp
+                                )
+                            }
+                            Row(
                                 modifier = Modifier
-                                    .align(Alignment.CenterEnd)
-                                    .padding(bottom = 16.dp),
-                                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF1A73E8))
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 0.dp, vertical = 10.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ){
+                            Text(
+                                text = String.format("%.1f/10", m.voteAverage),
+                                color = Color(0xFFFFC107),
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "(${m.voteCount} votes)",
+                                color = Color.White,
+                                fontSize = 12.sp
+                            )
+                            IconButton(
+                                onClick = {},
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .size(36.dp)
                             ) {
-                                Text("Visit Official Website", color = Color.White)
+                                Icon(
+                                    Icons.Default.Share,
+                                    contentDescription = "Explore",
+                                    tint = Color.LightGray
+                                )
+                            }
                             }
                         }
 
-                        // Movie metadata
-                        Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                            Text(
-                                text = "Release Date: April 16, 2025",
-                                color = Color.White,
-                                fontSize = 14.sp
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "Runtime: 138 minutes",
-                                color = Color.White,
-                                fontSize = 14.sp
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "Genres: Drama, Horror, Music",
-                                color = Color.White,
-                                fontSize = 14.sp
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "Country: US",
-                                color = Color.White,
-                                fontSize = 14.sp
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "Languages: English",
-                                color = Color.White,
-                                fontSize = 14.sp
-                            )
-                        }
 
-                        // Overview
-                        Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                            Text(
-                                text = "Overview:",
-                                color = Color.White,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = movie.overview ?: "Trying to leave their troubled lives behind, twin brothers return to their hometown to start again, only to discover that an even greater evil is waiting to welcome them back.",
-                                color = Color.White,
-                                fontSize = 14.sp
-                            )
-                        }
+                    }
 
-                        // Production Companies
-                        Column(modifier = Modifier.padding(vertical = 16.dp)) {
-                            Text(
-                                text = "Production Companies",
-                                color = Color.White,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                ProductionCompanyItem("Warner Bros. Pictures")
-                                ProductionCompanyItem("Proximity Media")
-                                ProductionCompanyItem("Domain Entertainment")
+                    // Metadata
+                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                        InfoRow(label = "Release Date", value = m.releaseDate.toString())
+                        InfoRow(label = "Runtime", value = "${m.runtime} minutes")
+                        InfoRow(label = "Genres", value = m.genres?.joinToString(", "){it.name} ?: "N/A")
+                        InfoRow(label = "Country", value = m.country?.joinToString(", ") ?: "N/A")
+                        InfoRow(label = "Languages", value = m.languages?.toString()?: "N/A")
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Overview
+                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                        Text(
+                            text = "Overview:",
+                            color = Color.White,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp
+                        )
+                        Text(
+                            text = m.overview,
+                            color = Color.LightGray,
+                            fontSize = 14.sp
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Production Companies
+                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                        Text(
+                            text = "Production Companies",
+                            color = Color.White,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp
+                        )
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp)
+                        ) {
+                            items(m.productionCompanies?.size ?: 0) { idx ->
+                                CompanyItem(name = m.productionCompanies?.get(idx)?.name ?: "N/A",
+                                    logoPath = m.productionCompanies?.get(idx)?.logoPath)
+
                             }
                         }
                     }
@@ -271,28 +205,47 @@ fun DetailScreen(
 }
 
 @Composable
-fun ProductionCompanyItem(name: String) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+private fun InfoRow(label: String, value: String) {
+    Row(modifier = Modifier.padding(vertical = 2.dp)) {
+        Text(text = "$label: ", color = Color.White, fontSize = 14.sp)
+        Text(text = value, color = Color.LightGray, fontSize = 12.sp)
+    }
+}
+
+@Composable
+private fun CompanyItem(name: String, logoPath: String? = null) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Box(
             modifier = Modifier
                 .size(50.dp)
-                .background(Color.Gray.copy(alpha = 0.3f), RoundedCornerShape(4.dp)),
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color.White.copy(alpha = 0.8f)),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = name.first().toString(),
-                color = Color.White,
-                fontSize = 20.sp
-            )
+            if (logoPath != null) {
+                AsyncImage(
+                    model = "$TMDB_IMAGE_BASE_URL$logoPath",
+                    contentDescription = "Company Logo",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1.5f)
+                )
+            } else {
+                Text(
+                    text = name.first().toString(),
+                    color = Color.White,
+                    fontSize = 20.sp
+                )
+            }
         }
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(4.dp).width(4.dp))
         Text(
             text = name,
             color = Color.White,
             fontSize = 12.sp,
-            maxLines = 2
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
@@ -300,8 +253,9 @@ fun ProductionCompanyItem(name: String) {
 @Preview(showBackground = true)
 @Composable
 fun DetailScreenPreview() {
+    // Preview with sample data
     DetailScreen(
-        movieId = 12344,
+        movieId = 0,
         onBack = {}
     )
 }

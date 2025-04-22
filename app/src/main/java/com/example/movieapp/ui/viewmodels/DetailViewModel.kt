@@ -17,10 +17,11 @@ class DetailViewModel(
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    fun load(id: Int) {
+
+    fun load(movieId: Int) {
         viewModelScope.launch {
             _isLoading.value = true
-            _movieDetail.value = repo.getDetail(id)
+            _movieDetail.value = repo.getDetail(movieId)
             _isLoading.value = false
         }
     }
