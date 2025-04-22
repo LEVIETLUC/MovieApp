@@ -12,7 +12,7 @@ MovieApp is a mobile application designed to showcase trending movies, search fo
 
 ### Frameworks and Libraries
 - **Jetpack Compose**: For building the UI with a declarative approach.
-- **Hilt**: For dependency injection.
+- **Koin**: For dependency injection.
 - **Retrofit**: For making network requests to the TMDB API.
 - **OkHttp**: For HTTP client and logging.
 - **Room**: For local database storage.
