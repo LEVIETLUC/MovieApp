@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -40,6 +42,7 @@ fun DetailScreen(
 
     val movie by viewModel.movieDetail.collectAsState()
     val loading by viewModel.isLoading.collectAsState()
+    val scrollState = rememberScrollState()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -51,150 +54,172 @@ fun DetailScreen(
             }
         } else {
             movie?.let { m ->
-                Column(modifier = Modifier.fillMaxSize()) {
-                    // Top hero section: backdrop + poster
-                    Box(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp)
-                    ) {
-                        AsyncImage(
-                            model = "$TMDB_IMAGE_BASE_URL${m.backdropPath}",
-                            contentDescription = "Backdrop",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                        IconButton(
-                            onClick = onBack,
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .size(36.dp)
-                                .background(Color.Black.copy(alpha = 0.5f), shape = RoundedCornerShape(18.dp))
-                        ) {
-                            Icon(
-                                Icons.Default.ArrowBack,
-                                contentDescription = "Back",
-                                tint = Color.White
-                            )
-                        }
-                        AsyncImage(
-                            model = "$TMDB_IMAGE_BASE_URL${m.posterPath}",
-                            contentDescription = "Poster",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .width(120.dp)
-                                .height(160.dp)
-                                .align(Alignment.BottomEnd)
-                                .offset(x = (-16).dp, y = 60.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                        )
-                    }
-
-                    // Title, rating, website
-                    Row(
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(scrollState)
+                ) {
+                    Column(
                         modifier = Modifier
-                            .width(280.dp)
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp) // Add padding to avoid content being cut off
                     ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = m.title,
-                                color = Color.Red,
-                                fontSize = 22.sp,
-                                fontWeight = FontWeight.Medium,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            m.tagline?.takeIf { it.isNotBlank() }?.let { tag ->
-                                Text(
-                                    text = tag,
-                                    color = Color.LightGray,
-                                    fontStyle = FontStyle.Italic,
-                                    maxLines = 2,
-                                    fontSize = 12.sp
-                                )
-                            }
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 0.dp, vertical = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ){
-                            Text(
-                                text = String.format("%.1f/10", m.voteAverage),
-                                color = Color(0xFFFFC107),
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = "(${m.voteCount} votes)",
-                                color = Color.White,
-                                fontSize = 12.sp
+                        // Top hero section: backdrop + poster
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(300.dp)
+                        ) {
+                            AsyncImage(
+                                model = "$TMDB_IMAGE_BASE_URL${m.backdropPath}",
+                                contentDescription = "Backdrop",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
                             )
                             IconButton(
-                                onClick = {},
+                                onClick = onBack,
                                 modifier = Modifier
                                     .padding(16.dp)
                                     .size(36.dp)
+                                    .background(
+                                        Color.Black.copy(alpha = 0.5f),
+                                        shape = RoundedCornerShape(18.dp)
+                                    )
                             ) {
                                 Icon(
-                                    Icons.Default.Share,
-                                    contentDescription = "Explore",
-                                    tint = Color.LightGray
+                                    Icons.Default.ArrowBack,
+                                    contentDescription = "Back",
+                                    tint = Color.White
                                 )
                             }
+                            AsyncImage(
+                                model = "$TMDB_IMAGE_BASE_URL${m.posterPath}",
+                                contentDescription = "Poster",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .width(120.dp)
+                                    .height(160.dp)
+                                    .align(Alignment.BottomEnd)
+                                    .offset(x = (-16).dp, y = 60.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                            )
+                        }
+
+                        // Title, rating, website
+                        Row(
+                            modifier = Modifier
+                                .width(280.dp)
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = m.title,
+                                    color = Color.Red,
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                m.tagline?.takeIf { it.isNotBlank() }?.let { tag ->
+                                    Text(
+                                        text = tag,
+                                        color = Color.LightGray,
+                                        fontStyle = FontStyle.Italic,
+                                        maxLines = 2,
+                                        fontSize = 12.sp
+                                    )
+                                }
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 0.dp, vertical = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = String.format("%.1f/10", m.voteAverage),
+                                        color = Color(0xFFFFC107),
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = "(${m.voteCount} votes)",
+                                        color = Color.White,
+                                        fontSize = 12.sp
+                                    )
+                                    IconButton(
+                                        onClick = {},
+                                        modifier = Modifier
+                                            .padding(16.dp)
+                                            .size(36.dp)
+                                    ) {
+                                        Icon(
+                                            Icons.Default.Share,
+                                            contentDescription = "Explore",
+                                            tint = Color.LightGray
+                                        )
+                                    }
+                                }
                             }
                         }
 
+                        // Metadata
+                        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                            InfoRow(label = "Release Date", value = m.releaseDate.toString())
+                            InfoRow(label = "Runtime", value = "${m.runtime} minutes")
+                            InfoRow(
+                                label = "Genres",
+                                value = m.genres?.joinToString(", ") { it.name } ?: "N/A"
+                            )
+                            InfoRow(
+                                label = "Country",
+                                value = m.country?.joinToString(", ") ?: "N/A"
+                            )
+                            InfoRow(
+                                label = "Languages",
+                                value = m.languages?.toString() ?: "N/A"
+                            )
+                        }
 
-                    }
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                    // Metadata
-                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        InfoRow(label = "Release Date", value = m.releaseDate.toString())
-                        InfoRow(label = "Runtime", value = "${m.runtime} minutes")
-                        InfoRow(label = "Genres", value = m.genres?.joinToString(", "){it.name} ?: "N/A")
-                        InfoRow(label = "Country", value = m.country?.joinToString(", ") ?: "N/A")
-                        InfoRow(label = "Languages", value = m.languages?.toString()?: "N/A")
-                    }
+                        // Overview
+                        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                            Text(
+                                text = "Overview:",
+                                color = Color.White,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 16.sp
+                            )
+                            Text(
+                                text = m.overview,
+                                color = Color.LightGray,
+                                fontSize = 14.sp
+                            )
+                        }
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    // Overview
-                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        Text(
-                            text = "Overview:",
-                            color = Color.White,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 16.sp
-                        )
-                        Text(
-                            text = m.overview,
-                            color = Color.LightGray,
-                            fontSize = 14.sp
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Production Companies
-                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        Text(
-                            text = "Production Companies",
-                            color = Color.White,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 16.sp
-                        )
-                        LazyRow(
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 8.dp)
-                        ) {
-                            items(m.productionCompanies?.size ?: 0) { idx ->
-                                CompanyItem(name = m.productionCompanies?.get(idx)?.name ?: "N/A",
-                                    logoPath = m.productionCompanies?.get(idx)?.logoPath)
-
+                        // Production Companies
+                        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                            Text(
+                                text = "Production Companies",
+                                color = Color.White,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 16.sp
+                            )
+                            LazyRow(
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 8.dp)
+                            ) {
+                                items(m.productionCompanies?.size ?: 0) { idx ->
+                                    CompanyItem(
+                                        name = m.productionCompanies?.get(idx)?.name ?: "N/A",
+                                        logoPath = m.productionCompanies?.get(idx)?.logoPath
+                                    )
+                                }
                             }
                         }
                     }
