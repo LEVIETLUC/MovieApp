@@ -24,12 +24,9 @@ import com.example.movieapp.ui.viewmodels.DetailViewModel
 import com.example.movieapp.util.Constants.TMDB_IMAGE_BASE_URL
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
-import kotlin.math.max
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -217,7 +214,7 @@ fun DetailScreen(
                                 items(m.productionCompanies?.size ?: 0) { idx ->
                                     CompanyItem(
                                         name = m.productionCompanies?.get(idx)?.name ?: "N/A",
-                                        logoPath = m.productionCompanies?.get(idx)?.logoPath
+                                        logoPath = m.productionCompanies?.get(idx)?.logo_path
                                     )
                                 }
                             }

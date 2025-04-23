@@ -5,6 +5,7 @@ plugins {
     id("com.google.devtools.ksp") version "1.9.0-1.0.13"
 
 
+
 }
 
 android {
@@ -39,11 +40,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
@@ -109,9 +110,24 @@ dependencies {
     // Moshi (JSON parsing / Analyse JSON)
     ksp ("com.squareup.moshi:moshi-kotlin-codegen:1.15.0")
     implementation ("com.squareup.moshi:moshi-kotlin:1.15.0")
+    implementation("com.google.code.gson:gson:2.10.1")
+
 
     // Testing
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.0")
+    testImplementation ("com.google.truth:truth:1.1.3")
+    testImplementation ("com.google.code.gson:gson:2.10.1")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+
+
+    testImplementation ("org.mockito:mockito-core:5.2.1")
+    testImplementation ("org.mockito.kotlin:mockito-kotlin:5.2.1")
+    testImplementation("org.mockito:mockito-inline:5.2.0")
+    testImplementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
+
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation(kotlin("test"))
+
 
 }

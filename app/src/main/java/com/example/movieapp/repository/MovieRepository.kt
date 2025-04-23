@@ -14,7 +14,6 @@ import com.example.movieapp.db.MovieEntity
 import com.example.movieapp.db.MovieDetailEntity
 import com.example.movieapp.db.TmdbDatabase
 import com.example.movieapp.network.TmdbService
-import com.example.movieapp.network.TrendingRemoteMediator
 import com.example.movieapp.network.model.MovieResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -32,17 +31,13 @@ class MovieRepository(
     @OptIn(ExperimentalPagingApi::class)
 
 
-    fun getTrendingStream(page: Int): Flow<PagingData<MovieEntity>> {
-        return Pager(
-            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
-            pagingSourceFactory = { movieDao.pagingSource(page) }
-        ).flow
-    }
-
     // Load & cache trending pages
     suspend fun loadAndCacheTrending(page: Int): List<MovieEntity> {
         val resp = service.getTrending(page)
-        Log.d("MovieRepository", "loadAndCacheTrending: Fetched ${resp.results.size} movies for page $page")
+        Log.d(
+            "MovieRepository",
+            "loadAndCacheTrending: Fetched ${resp.results.size} movies for page $page"
+        )
         Log.d("MovieRepository", "loadAndCacheTrending: raw response = $resp")
         val entities = resp.results.map { it.toEntity(page) }
         withContext(Dispatchers.IO) {
@@ -57,19 +52,16 @@ class MovieRepository(
                     }
                 }
             }
-            Log.e("MovieRepository", "loadAndCacheTrending: inserted ${entities.size} movies for page $page")
+            Log.e(
+                "MovieRepository",
+                "loadAndCacheTrending: inserted ${entities.size} movies for page $page"
+            )
         }
         return entities
     }
 
     suspend fun search(query: String, page: Int): MovieResponse {
         return service.searchMovies(query, page)
-    }
-
-    suspend fun resetDatabase(db: TmdbDatabase) {
-        withContext(Dispatchers.IO) {
-            db.clearAllTables()
-        }
     }
 
     suspend fun getDetail(id: Int): MovieDetailEntity {
@@ -82,8 +74,7 @@ class MovieRepository(
 //            resetDatabase(db)
 //            insertMovieDetail(entity)
             return entity
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             try {
                 val entity = getMovieDetail(id)
                 Log.d("MovieRepository", "getDetail: Fetched movie details for id $id from DB")
@@ -93,8 +84,7 @@ class MovieRepository(
                 } else {
                     throw Exception("Movie details not found in database for id $id")
                 }
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 Log.e("MovieRepository", "getDetail: Error fetching movie details for id $id", e)
                 throw e
             }
@@ -102,11 +92,6 @@ class MovieRepository(
 
     }
 
-    suspend fun insertMovieDetail(movieDetail: MovieDetailEntity) {
-        return withContext(Dispatchers.IO) {
-            detailDao.insert(movieDetail)
-        }
-    }
     suspend fun getMovieDetail(id: Int): MovieDetailEntity? {
         return withContext(Dispatchers.IO) {
             detailDao.getById(id)
@@ -125,22 +110,21 @@ class MovieRepository(
         }
     }
 
-
-suspend fun getMoviePagingPage(page: Int): List<MovieEntity> {
-    return withContext(Dispatchers.IO) {
-        val result = movieDao.pagingSource(page).load(
-            PagingSource.LoadParams.Refresh(
-                key = page,
-                loadSize = 20,
-                placeholdersEnabled = false
+    suspend fun getMoviePagingPage(page: Int): List<MovieEntity> {
+        return withContext(Dispatchers.IO) {
+            val result = movieDao.pagingSource(page).load(
+                PagingSource.LoadParams.Refresh(
+                    key = page,
+                    loadSize = 20,
+                    placeholdersEnabled = false
+                )
             )
-        )
-        if (result is PagingSource.LoadResult.Page) {
-            result.data
-        } else {
-            emptyList()
+            if (result is PagingSource.LoadResult.Page) {
+                result.data
+            } else {
+                emptyList()
+            }
         }
     }
-}
 
 }

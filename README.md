@@ -55,14 +55,3 @@ MovieApp is a mobile application designed to showcase trending movies, search fo
 - Minimum SDK: 30
 - Target SDK: 34
 
-### Setup
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/LEVIETLUC/MovieApp.git
-   ```
-2. Open the project in Android Studio.
-3. Build the project to download dependencies.
-4. Run the app on an emulator or physical device.
-
-## License
-This project is licensed under the MIT License. See the LICENSE file for details.

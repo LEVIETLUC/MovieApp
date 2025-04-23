@@ -7,7 +7,7 @@ import com.example.movieapp.network.model.Genres
 import com.example.movieapp.network.model.ProductionCompanies
 
 @Entity(tableName = "movie_details")
-@TypeConverters(ListStringConverter::class) // Thêm annotation này
+@TypeConverters(ListStringConverter::class)
 data class MovieDetailEntity(
     @PrimaryKey val id: Int,
     val title: String,
