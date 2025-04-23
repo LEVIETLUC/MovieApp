@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.testImplementation
 
 plugins {
     alias(libs.plugins.android.application)
@@ -57,6 +58,12 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    testOptions {
+        unitTests {
+            isReturnDefaultValues = true
+        }
+    }
+
 }
 
 dependencies {
@@ -128,6 +135,13 @@ dependencies {
 
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     testImplementation(kotlin("test"))
+
+    testImplementation ("io.mockk:mockk:1.13.5")
+    implementation("org.slf4j:slf4j-api:1.7.36")
+    implementation("ch.qos.logback:logback-classic:1.2.11")
+    testImplementation("org.robolectric:robolectric:4.9.2")
+    testImplementation("androidx.test:core:1.5.0")
+    testImplementation("androidx.test:runner:1.5.2")
 
 
 }

@@ -65,14 +65,11 @@ class MovieRepository(
     }
 
     suspend fun getDetail(id: Int): MovieDetailEntity {
-//        detailDao.getById(id)?.let { return it }
         try {
             val resp = service.getMovieDetails(id)
             Log.d("MovieRepository", "getDetail: Fetched movie details for id $id")
             Log.d("MovieRepository", "getDetail: raw response = $resp")
             val entity = resp.toEntity()
-//            resetDatabase(db)
-//            insertMovieDetail(entity)
             return entity
         } catch (e: Exception) {
             try {
