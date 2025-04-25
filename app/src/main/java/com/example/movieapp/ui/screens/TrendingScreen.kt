@@ -1,5 +1,6 @@
 package com.example.movieapp.ui.screens
 
+import android.R.attr.contentDescription
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,6 +14,8 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -24,7 +27,8 @@ import com.example.movieapp.ui.viewmodels.TrendingViewModel
 @Composable
 fun TrendingScreen(
     onMovieClick: (Int) -> Unit,
-    onSearchClick: () -> Unit
+    onSearchClick: () -> Unit,
+
 ) {
     val viewModel: TrendingViewModel = getViewModel()
     val movies by viewModel.movies.collectAsState()
@@ -80,7 +84,10 @@ fun TrendingScreen(
                             .padding(4.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .testTag("LoadingIndicator") // hoặc
+                        )
                     }
                 }
             }

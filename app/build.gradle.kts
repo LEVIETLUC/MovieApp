@@ -62,6 +62,19 @@ android {
         unitTests {
             isReturnDefaultValues = true
         }
+        packagingOptions {
+            jniLibs {
+                useLegacyPackaging = true
+            }
+        }
+    }
+    packagingOptions {
+        resources.excludes += setOf(
+            "META-INF/LICENSE-notice.md",
+            "META-INF/LICENSE.md",
+            "META-INF/NOTICE.md",
+            "META-INF/DEPENDENCIES"
+        )
     }
 
 }
@@ -130,18 +143,27 @@ dependencies {
 
     testImplementation ("org.mockito:mockito-core:5.2.1")
     testImplementation ("org.mockito.kotlin:mockito-kotlin:5.2.1")
-    testImplementation("org.mockito:mockito-inline:5.2.0")
     testImplementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
+    testImplementation ("org.mockito:mockito-core:4.11.0")
+    testImplementation ("io.mockk:mockk-android:1.13.10")
+    testImplementation ("org.mockito:mockito-android:5.4.0")
+
 
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     testImplementation(kotlin("test"))
 
     testImplementation ("io.mockk:mockk:1.13.5")
+
     implementation("org.slf4j:slf4j-api:1.7.36")
     implementation("ch.qos.logback:logback-classic:1.2.11")
     testImplementation("org.robolectric:robolectric:4.9.2")
     testImplementation("androidx.test:core:1.5.0")
     testImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation ("androidx.compose.ui:ui-test-junit4:1.6.1")
+    androidTestImplementation ("io.mockk:mockk-android:1.13.10")
+    androidTestImplementation ("org.mockito.kotlin:mockito-kotlin:5.2.1")
+    androidTestImplementation ("org.mockito:mockito-android:5.11.0")
+
 
 
 }
