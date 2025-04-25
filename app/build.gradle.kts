@@ -1,4 +1,6 @@
 import org.gradle.kotlin.dsl.testImplementation
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -8,6 +10,12 @@ plugins {
 
 
 }
+
+
+val localProperties = Properties().apply {
+    load(rootProject.file("local.properties").inputStream())
+}
+val tmdbApiKey = localProperties["TMDB_API_KEY"]
 
 android {
     namespace = "com.example.movieapp"
@@ -25,6 +33,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField("String", "TMDB_API_KEY", "\"$tmdbApiKey\"")
     }
 
     kotlin {
@@ -49,6 +59,8 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
+
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -156,7 +168,7 @@ dependencies {
 
     implementation("org.slf4j:slf4j-api:1.7.36")
     implementation("ch.qos.logback:logback-classic:1.2.11")
-    testImplementation("org.robolectric:robolectric:4.9.2")
+    testImplementation ("org.robolectric:robolectric:4.11.1")
     testImplementation("androidx.test:core:1.5.0")
     testImplementation("androidx.test:runner:1.5.2")
     androidTestImplementation ("androidx.compose.ui:ui-test-junit4:1.6.1")
